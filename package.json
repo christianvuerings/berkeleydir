@@ -1,5 +1,19 @@
 {
+  "author": {
+    "email": "vueringschristian@gmail.com",
+    "name": "Christian Vuerings",
+    "url": "http://denbuzze.com"
+  },
+  "bugs": "https://github.com/christianv/berkeleydir/issues",
   "description": "Find people in the Berkeley directory",
+  "dependencies": {
+    "node.io": "0.5.1"
+  },
+  "license": "MIT",
   "name": "BerkeleyDir",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/christianv/berkeleydir.git"
+  },
   "version": "0.0.1"
 }
