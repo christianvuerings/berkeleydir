@@ -5,7 +5,7 @@ var firebaseDB = new Firebase('https://berkeleydir.firebaseio.com/users');
 var url = 'https://calnet.berkeley.edu/directory/details.pl?uid=';
 var urls = [];
 var numbers = [];
-for(var i = 0; i < 120000; i++) {
+for(var i = 101205; i < 1200000; i++) {
     urls.push(url + i);
 }
 

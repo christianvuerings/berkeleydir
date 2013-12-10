@@ -4,14 +4,46 @@
   <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.4/angular.min.js"></script>
   <script src='https://cdn.firebase.com/v0/firebase.js'></script>
   <script src='https://cdn.firebase.com/libs/angularfire/0.3.0/angularfire.min.js'></script>
+
+  <style>
+    body {
+      background: #000;
+      color: #fff;
+    }
+    .bd-list-container {
+      list-style-type: none;
+      margin: 0;
+      padding: 0;
+    }
+    .bd-list-item {
+      clear: both;
+      position: relative;
+    }
+    .bd-list-item div {
+      float: left;
+    }
+    .bd-list-item-id {
+      width: 10%;
+    }
+    .bd-list-item-name {
+      width: 45%;
+    }
+    .bd-list-item-email {
+      width: 45%;
+    }
+  </style>
 </head>
 <body>
   <h1>BerkeleyDir</h1>
   <div ng-controller="PeopleController">
     <input type="text" placeholder="Search..." ng-model="search.$" value="testss"></input>
-    <div ng-repeat="user in users | filter:search">
-        {{user.name}} - {{user.email}}
-    </div>
+    <ul class="bd-list-container">
+      <li class="bd-list-item" ng-repeat="user in users | filter:search | limitTo:20">
+        <div class="bd-list-item-id" ng-bind="user.id"></div>
+        <div class="bd-list-item-name" ng-bind="user.name"></div>
+        <div class="bd-list-item-email" ng-bind="user.email"></div>
+      </li>
+    </ul>
   </div>
   <script>
     var berkeleydir = angular.module("berkeleydir", ["firebase"]);
