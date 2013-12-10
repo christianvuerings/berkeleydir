@@ -7,13 +7,24 @@
   "bugs": "https://github.com/christianv/berkeleydir/issues",
   "description": "Find people in the Berkeley directory",
   "dependencies": {
+    "crawler": "0.2.5",
+    "firebase": "0.6.22",
+    "jsdom": "0.8.9",
+    "jquery": "1.8.3",
     "node.io": "0.5.1"
   },
+  "keywords": [
+    "Berkeley",
+    "Directory"
+  ],
   "license": "MIT",
   "name": "BerkeleyDir",
   "repository": {
     "type": "git",
     "url": "https://github.com/christianv/berkeleydir.git"
+  },
+  "scripts": {
+    "start": "node server.js"
   },
   "version": "0.0.1"
 }
