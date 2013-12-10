@@ -1,0 +1,27 @@
+<!doctype html>
+<html ng-app="berkeleydir">
+<head>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.4/angular.min.js"></script>
+  <script src='https://cdn.firebase.com/v0/firebase.js'></script>
+  <script src='https://cdn.firebase.com/libs/angularfire/0.3.0/angularfire.min.js'></script>
+</head>
+<body>
+  <h1>BerkeleyDir</h1>
+  <div ng-controller="PeopleController">
+    <input type="text" placeholder="Search..." ng-model="search.$" value="testss"></input>
+    <div ng-repeat="user in users | filter:search">
+        {{user.name}} - {{user.email}}
+    </div>
+  </div>
+  <script>
+    var berkeleydir = angular.module("berkeleydir", ["firebase"]);
+
+    function PeopleController($scope, angularFire, angularFireCollection) {
+      var ref = new Firebase("https://berkeleydir.firebaseio.com/users");
+      //$scope.users = [];
+      //angularFire(ref.limit(15), $scope, "users");
+      $scope.users = angularFireCollection(ref);
+    };
+  </script>
+</body>
+</html>
