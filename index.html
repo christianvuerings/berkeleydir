@@ -6,44 +6,118 @@
   <script src='https://cdn.firebase.com/libs/angularfire/0.3.0/angularfire.min.js'></script>
 
   <style>
+    *, *:before, *:after {
+      -moz-box-sizing: border-box;
+      -webkit-box-sizing: border-box;
+      box-sizing: border-box;
+     }
     body {
-      background: #000;
+      background: #222;
       color: #fff;
+      margin: 13px;
     }
-    .bd-list-container {
-      list-style-type: none;
+    body, input {
+      font-family: "Proxima Nova Regular","Helvetica Neue",Calibri,"Droid Sans",Helvetica,Arial,sans-serif;
+    }
+    h1 {
       margin: 0;
       padding: 0;
     }
-    .bd-list-item {
-      clear: both;
-      position: relative;
+    .bd-search {
+      background: rgba(255,255,255, 0.1);
+      border: none;
+      color: #ddd;
+      font-size: 16px;
+      padding: 5px;
+      text-align: center;
+      width: 400px;
     }
-    .bd-list-item div {
-      float: left;
+    @media (max-width: 450px) {
+      .bd-search {
+        width: 100%;
+      }
     }
-    .bd-list-item-id {
-      width: 10%;
+    .bd-search-container {
     }
-    .bd-list-item-name {
-      width: 45%;
+    .bd-container {
+      text-align: center;
     }
-    .bd-list-item-email {
-      width: 45%;
+    .bd-table-container {
+      list-style-type: none;
+      margin: 20px auto 0;
+      max-width: 700px;
+      padding: 0;
+    }
+    .bd-table-container a {
+      color: #ddd;
+    }
+    .bd-table-container th {
+      color: #ddd;
+    }
+    .bd-table-container td, .bd-table-container th {
+      text-align: left;
+      padding: 2px 5px;
+    }
+    @media (max-width: 450px) {
+      .bd-table-container {
+        margin: 10px 0;
+      }
+      .bd-table-container tr {
+        padding: 10px 0;
+      }
+      .bd-table-headers {
+        display: none;
+      }
+      .bd-table-item, .bd-table-item td {
+        display: block;
+      }
+    }
+
+    img,
+    object,
+    embed {
+      height: auto;
+      max-width: 100%;
+    }
+
+    .bd-visuallyhidden {
+      border: 0;
+      clip: rect(0 0 0 0);
+      height: 1px;
+      margin: -1px;
+      overflow: hidden;
+      padding: 0;
+      position: absolute;
+      width: 1px;
     }
   </style>
 </head>
 <body>
-  <h1>BerkeleyDir</h1>
-  <div ng-controller="PeopleController">
-    <input type="text" placeholder="Search..." ng-model="search.$" value="testss"></input>
-    <ul class="bd-list-container">
-      <li class="bd-list-item" ng-repeat="user in users | filter:search | limitTo:20">
-        <div class="bd-list-item-id" ng-bind="user.id"></div>
-        <div class="bd-list-item-name" ng-bind="user.name"></div>
-        <div class="bd-list-item-email" ng-bind="user.email"></div>
-      </li>
-    </ul>
+  <div class="bd-container" ng-controller="PeopleController">
+    <h1>
+      <img class="bd-logo" src="images/logo-optim.svg" alt="" />
+      <span class="bd-visuallyhidden">BerkeleyDir</span>
+    </h1>
+    <div class="bd-search-container">
+      <input class="bd-search" type="text" placeholder="Search..." ng-model="search.$"></input>
+    </div>
+    <table class="bd-table-container" ng-if="users.length">
+      <tr class="bd-table-headers">
+        <th>Uid</th>
+        <th>Name</th>
+        <th>Email</th>
+      </tr>
+      <tr class="bd-table-item" ng-repeat="user in users | filter:search | limitTo:20">
+        <td>
+
+          <a ng-href="https://calnet.berkeley.edu/directory/details.pl?uid={{user.id}}" ng-bind="user.id"></a>
+        </td>
+        <td ng-bind="user.name"></td>
+        <td>
+          <a ng-href="mailto:{{user.email}}" ng-bind="user.email"></a>
+        </td>
+      </tr>
+    </table>
   </div>
   <script>
     var berkeleydir = angular.module("berkeleydir", ["firebase"]);
