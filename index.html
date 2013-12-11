@@ -2,8 +2,11 @@
 <html ng-app="berkeleydir">
 <head>
   <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.4/angular.min.js"></script>
-  <script src='https://cdn.firebase.com/v0/firebase.js'></script>
-  <script src='https://cdn.firebase.com/libs/angularfire/0.3.0/angularfire.min.js'></script>
+  <script src="https://cdn.firebase.com/v0/firebase.js"></script>
+  <script src="https://cdn.firebase.com/libs/angularfire/0.3.0/angularfire.min.js"></script>
+  <script src="https://rawgithub.com/LeaVerou/prefixfree/gh-pages/prefixfree.js"></script>
+  <script src="lib/bindonce.js"></script>
+
 
   <style>
     *, *:before, *:after {
@@ -41,6 +44,55 @@
     }
     .bd-container {
       text-align: center;
+    }
+
+    .bd-loader {
+      width: 100px;
+      height: 50px;
+      position: relative;
+      margin: 45px auto 0;
+    }
+
+    .bd-loader .stick {
+      width:50px;
+      height:6px;
+      position:absolute;
+      top:23px;
+    }
+
+    .bd-loader .left {
+      left:3px;
+      transform:rotate(180deg);
+      animation:left 1.7s infinite;
+    }
+
+    @keyframes left {
+      from { transform:rotate(180deg) scale(1); }
+      50% { transform:rotate(540deg) scale(1.5); }
+      to { transform:rotate(540deg) scale(1); }
+    }
+
+    .bd-loader .right {
+      right:3px;
+      animation:right 1.7s infinite;
+    }
+
+    @keyframes right {
+      from { transform:rotate(0deg) scale(1.5); }
+      50% { transform:rotate(0deg) scale(1); }
+      to { transform:rotate(-360deg) scale(1.5); }
+    }
+
+    .bd-loader .right span,
+    .bd-loader .left span {
+      width:6px;
+      height:6px;
+      background:#fff;
+      border-radius:3px;
+      display:block;
+    }
+    .bd-noitems {
+      margin-top: 20px;
     }
     .bd-table-container {
       list-style-type: none;
@@ -101,13 +153,17 @@
     <div class="bd-search-container">
       <input class="bd-search" type="text" placeholder="Search..." ng-model="search.$"></input>
     </div>
-    <table class="bd-table-container" ng-if="users.length">
+    <div class="bd-loader" ng-show="isloading">
+      <div class="left stick"><span></span></div>
+      <div class="right stick"><span></span></div>
+    </div>
+    <table class="bd-table-container" ng-show="userItems.length">
       <tr class="bd-table-headers">
         <th>Uid</th>
         <th>Name</th>
         <th>Email</th>
       </tr>
-      <tr class="bd-table-item" ng-repeat="user in users | filter:search | limitTo:20">
+      <tr class="bd-table-item" ng-repeat="user in userItems = (users | filter:search | limitTo:20)">
         <td>
 
           <a ng-href="https://calnet.berkeley.edu/directory/details.pl?uid={{user.id}}" ng-bind="user.id"></a>
@@ -118,15 +174,25 @@
         </td>
       </tr>
     </table>
+    <div class="bd-noitems" ng-show="!isloading && !userItems.length">
+      No items have been found
+    </div>
   </div>
   <script>
     var berkeleydir = angular.module("berkeleydir", ["firebase"]);
 
-    function PeopleController($scope, angularFire, angularFireCollection) {
+    function PeopleController($scope, $timeout, angularFireCollection) {
       var ref = new Firebase("https://berkeleydir.firebaseio.com/users");
       //$scope.users = [];
       //angularFire(ref.limit(15), $scope, "users");
-      $scope.users = angularFireCollection(ref);
+      $scope.users = [];
+      $scope.isloading = true;
+
+      $scope.users = angularFireCollection(ref, function initialLoad(){
+        $timeout(function() {
+          $scope.isloading = false;
+        });
+      });
     };
   </script>
 </body>
