@@ -1,7 +1,5 @@
 var ldap = require('ldapjs');
 
-//console.log(ldap);
-
 var server = 'ldap://ldap.berkeley.edu';
 var searchBase = 'ou=people,dc=berkeley,dc=edu';
 
@@ -9,41 +7,52 @@ var client = ldap.createClient({
   url: server
 });
 
-//console.log(client);
 
-var opts = {
-  //bindDN: 'ou=people,dc=berkeley,dc=edu',
-  //filter: '(&(cn=^0)(uid="61889"))'
-  //filter: '(objectclass=*)'
-  //filter: '#uid=61889'
-  //filter: '((objectclass=*)(!(mail=test*)))'
+
+var exists = function(attribute) {
+  return (attribute && attribute[0]);
 };
 
-client.bind('ou=people', '', function (err) {
-  client.search(searchBase, opts, function(err, res) {
-    //console.log(err);
-    //console.log(res);
+var onSearch = function(err, res) {
 
-    res.on('searchEntry', function (entry) {
-      //var log = JSON.stringify(entry);
+  res.on('searchEntry', function (entry) {
+    //var log = JSON.stringify(entry);
 
-      // for (var i in entry) {
-      //   console.log(i, entry[i]);
-      // }
-      console.log(entry.toString());
-      var user = entry.json;
-      //console.log(user.attributes[0].vals);
-    });
-    res.on('searchReference', function(referral) {
-      console.log('referral: ' + referral.uris.join());
-    });
-    res.on('error', function(err) {
-      console.error('error: ' + err.message);
-    });
-    res.on('end', function(result) {
-      console.log('status: ' + result.status);
-    });
+    var user = {
+      name: '',
+      email: [],
+      id: 0
+    };
+
+    for (var i = 0; i < entry.json.attributes.length; i++) {
+      var item = entry.json.attributes[i];
+
+      if (item.type === 'displayName' && exists(item.vals)) {
+        user.name = item.vals[0];
+      }
+      if (item.type === 'uid' && exists(item.vals)) {
+        user.id = parseInt(item.vals[0], 10);
+      }
+      if (item.type === 'mail' && exists(item.vals)) {
+        user.email = item.vals;
+      }
+    }
+
+    console.log(user);
   });
-});
+  res.on('error', function(err) {
+    console.error('error: ' + err.message);
+  });
+};
 
-// ldapsearch -H ldap://ldap.berkeley.edu -x -b 'ou=people,dc=berkeley,dc=edu'  objectclass=*
+for (var i = 1; i < 100; i++) {
+
+  var opts = {
+    filter: '(&(objectclass=*)(uid=' + i + '))',
+    scope: 'sub'
+  };
+
+  client.search(searchBase, opts, onSearch);
+}
+
+
