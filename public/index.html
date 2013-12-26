@@ -1,0 +1,213 @@
+<!doctype html>
+<html ng-app="berkeleydir">
+<head>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.6/angular.min.js"></script>
+  <script src="https://rawgithub.com/LeaVerou/prefixfree/gh-pages/prefixfree.js"></script>
+
+  <style>
+    *, *:before, *:after {
+      -moz-box-sizing: border-box;
+      -webkit-box-sizing: border-box;
+      box-sizing: border-box;
+     }
+    body {
+      background: #222;
+      color: #fff;
+      margin: 13px;
+    }
+    body, input {
+      font-family: "Proxima Nova Regular","Helvetica Neue",Calibri,"Droid Sans",Helvetica,Arial,sans-serif;
+    }
+    h1 {
+      margin: 0;
+      padding: 0;
+    }
+    .bd-search {
+      background: rgba(255,255,255, 0.1);
+      border: none;
+      color: #ddd;
+      font-size: 16px;
+      padding: 5px;
+      text-align: center;
+      width: 400px;
+    }
+    @media (max-width: 450px) {
+      .bd-search {
+        width: 100%;
+      }
+    }
+    .bd-search-container {
+    }
+    .bd-container {
+      text-align: center;
+    }
+
+    .bd-loader {
+      width: 100px;
+      height: 50px;
+      position: relative;
+      margin: 45px auto 0;
+    }
+
+    .bd-loader .stick {
+      width:50px;
+      height:6px;
+      position:absolute;
+      top:23px;
+    }
+
+    .bd-loader .left {
+      left:3px;
+      transform:rotate(180deg);
+      animation:left 1.7s infinite;
+    }
+
+    @keyframes left {
+      from { transform:rotate(180deg) scale(1); }
+      50% { transform:rotate(540deg) scale(1.5); }
+      to { transform:rotate(540deg) scale(1); }
+    }
+
+    .bd-loader .right {
+      right:3px;
+      animation:right 1.7s infinite;
+    }
+
+    @keyframes right {
+      from { transform:rotate(0deg) scale(1.5); }
+      50% { transform:rotate(0deg) scale(1); }
+      to { transform:rotate(-360deg) scale(1.5); }
+    }
+
+    .bd-loader .right span,
+    .bd-loader .left span {
+      width:6px;
+      height:6px;
+      background:#fff;
+      border-radius:3px;
+      display:block;
+    }
+    .bd-noitems {
+      margin-top: 20px;
+    }
+    .bd-table-container {
+      list-style-type: none;
+      margin: 20px auto 0;
+      max-width: 700px;
+      padding: 0;
+    }
+    .bd-table-container a {
+      color: #ddd;
+    }
+    .bd-table-container th {
+      color: #ddd;
+    }
+    .bd-table-container td, .bd-table-container th {
+      text-align: left;
+      padding: 2px 5px;
+    }
+    @media (max-width: 450px) {
+      .bd-table-container {
+        margin: 10px 0;
+      }
+      .bd-table-container tr {
+        padding: 10px 0;
+      }
+      .bd-table-headers {
+        display: none;
+      }
+      .bd-table-item, .bd-table-item td {
+        display: block;
+      }
+    }
+
+    img,
+    object,
+    embed {
+      height: auto;
+      max-width: 100%;
+    }
+
+    .bd-visuallyhidden {
+      border: 0;
+      clip: rect(0 0 0 0);
+      height: 1px;
+      margin: -1px;
+      overflow: hidden;
+      padding: 0;
+      position: absolute;
+      width: 1px;
+    }
+  </style>
+</head>
+<body>
+  <div class="bd-container" ng-controller="PeopleController">
+    <h1>
+      <img class="bd-logo" src="images/logo-optim.svg" alt="" />
+      <span class="bd-visuallyhidden">BerkeleyDir</span>
+    </h1>
+    <div class="bd-search-container">
+      <input class="bd-search" type="text" placeholder="Search..." ng-model="user_search"></input>
+    </div>
+    <div class="bd-loader" ng-show="isloading">
+      <div class="left stick"><span></span></div>
+      <div class="right stick"><span></span></div>
+    </div>
+    <table class="bd-table-container" ng-show="userItems.length">
+      <tr class="bd-table-headers">
+        <th>Uid</th>
+        <th>Name</th>
+        <th>Email</th>
+      </tr>
+      <tr class="bd-table-item" ng-repeat="user in userItems = (users | limitTo:20)">
+        <td>
+
+          <a ng-href="https://calnet.berkeley.edu/directory/details.pl?uid={{user.id}}" ng-bind="user.id"></a>
+        </td>
+        <td ng-bind="user.name"></td>
+        <td>
+          <a data-ng-href="mailto:{{user.email}}" data-ng-bind="user.email"></a>
+        </td>
+      </tr>
+    </table>
+    <div class="bd-noitems" data-ng-show="!isloading && !userItems.length">
+      No items have been found
+    </div>
+  </div>
+  <script>
+    var berkeleydir = angular.module("berkeleydir", []);
+
+    function PeopleController($http, $scope, $timeout) {
+      $scope.users = [];
+      $scope.isloading = true;
+
+      $scope.$watch('user_search', function (search_string) {
+
+        if (!search_string) {
+          search_string = '';
+        }
+
+        $timeout(function() {
+
+          // if the text has not changed in the last second
+          // search for it!
+          if (search_string === $scope.user_search || search_string === '') {
+            $scope.isloading = true;
+            $http.get('/api/search/' + search_string).success(function(response) {
+              // inject the response into the view
+              $scope.users = response.users;
+              $scope.isloading = false;
+            });
+          }
+        }, 500);
+      });
+
+      // $scope.users = angularFireCollection(ref, function initialLoad(){
+      //   $timeout(function() {
+      //     $scope.isloading = false;
+      //   });
+      // });
+    }
+  </script>
+</body>
+</html>
