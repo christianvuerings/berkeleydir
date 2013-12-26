@@ -1,6 +1,7 @@
 # BerkeleyDir
 
-Easily search through the Berkeley Directory
+http://berkeleydir.herokuapp.com/
+Easily search through the Berkeley Directory.
 
 ## Start server
 
