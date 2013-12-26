@@ -181,6 +181,26 @@
       $scope.users = [];
       $scope.isloading = true;
 
+      var cache = {};
+
+      var performSearch = function(search_string) {
+        $scope.isloading = true;
+
+        if (!cache[search_string]) {
+          $http.get('/api/search/' + search_string).success(function(response) {
+            $scope.users = response.users;
+            cache[search_string] = {
+              users: response.users
+            };
+            $scope.isloading = false;
+          });
+        } else {
+          $scope.users = cache[search_string].users;
+          $scope.isloading = false;
+        }
+
+      };
+
       $scope.$watch('user_search', function (search_string) {
 
         if (!search_string) {
@@ -188,18 +208,10 @@
         }
 
         $timeout(function() {
-
-          // if the text has not changed in the last second
-          // search for it!
           if (search_string === $scope.user_search || search_string === '') {
-            $scope.isloading = true;
-            $http.get('/api/search/' + search_string).success(function(response) {
-              // inject the response into the view
-              $scope.users = response.users;
-              $scope.isloading = false;
-            });
+            performSearch(search_string);
           }
-        }, 500);
+        }, 100);
       });
 
       // $scope.users = angularFireCollection(ref, function initialLoad(){
