@@ -1,4 +1,9 @@
+var async = require('async');
+
 var ldap = require('ldapjs');
+
+var Firebase = require('firebase');
+var firebaseDB = new Firebase('https://berkeleydir.firebaseio.com/users');
 
 var server = 'ldap://ldap.berkeley.edu';
 var searchBase = 'ou=people,dc=berkeley,dc=edu';
@@ -6,8 +11,6 @@ var searchBase = 'ou=people,dc=berkeley,dc=edu';
 var client = ldap.createClient({
   url: server
 });
-
-
 
 var exists = function(attribute) {
   return (attribute && attribute[0]);
@@ -38,21 +41,56 @@ var onSearch = function(err, res) {
       }
     }
 
-    console.log(user);
+    //console.log(user);
+    firebaseDB.child(user.id).set(user);
+  });
+  res.on('end', function(result) {
+    console.log(result.messageID);
+    if (result.messageID === currentBatchNumber) {
+      console.log('next!!!');
+      nextBatch(currentBatchNumber);
+    }
   });
   res.on('error', function(err) {
     console.error('error: ' + err.message);
   });
 };
 
-for (var i = 1; i < 100; i++) {
+var search = function(arr) {
 
-  var opts = {
-    filter: '(&(objectclass=*)(uid=' + i + '))',
-    scope: 'sub'
-  };
+  async.each(arr, function(i, callback){
 
-  client.search(searchBase, opts, onSearch);
-}
+    process.nextTick(function () {
 
+      var opts = {
+        filter: '(&(objectclass=*)(uid=' + i + '))',
+        scope: 'sub'
+      };
+
+      client.search(searchBase, opts, function(err, res){
+        onSearch(err, res, i);
+      });
+
+      callback();
+    });
+
+  });
+
+};
+
+var currentBatchNumber = -1;
+
+var nextBatch = function(arrstart) {
+
+  var arr = [];
+  var arrlength = arrstart + 1000;
+  currentBatchNumber = arrlength;
+  for (var i = arrstart; i < arrlength; i++) {
+    arr[i] = i;
+  }
+  search(arr);
+
+};
+
+nextBatch(0);
 

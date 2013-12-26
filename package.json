@@ -7,6 +7,7 @@
   "bugs": "https://github.com/christianv/berkeleydir/issues",
   "description": "Find people in the Berkeley directory",
   "dependencies": {
+    "async": "0.2.9",
     "crawler": "0.2.5",
     "firebase": "0.6.22",
     "jsdom": "0.8.9",
