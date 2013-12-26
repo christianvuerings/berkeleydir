@@ -19,6 +19,7 @@ var sendResponse = function(users, query, response) {
 };
 
 var findUser = function(query, user) {
+  query = query.toLowerCase();
   if (typeof user === 'object') {
     for (var i in user) {
       if (user.hasOwnProperty(i)) {
