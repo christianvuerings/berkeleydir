@@ -13,8 +13,6 @@ var sendResponse = function(users, query, response) {
     "query": query
   };
 
-  console.log(responseObject);
-
   response.send(responseObject);
 };
 
