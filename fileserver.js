@@ -1,9 +1,10 @@
 var express = require('express');
 var fs = require('fs');
+var gravatar = require('gravatar');
+
 var app = express();
 
-// TODO make this async, this is for prototyping only
-var users_file = JSON.parse(fs.readFileSync('public/users.json', 'utf8'));
+var users_file;
 var users_limit = 10;
 
 var sendResponse = function(users, query, response) {
@@ -75,6 +76,26 @@ var performSearch = function(query, response) {
   sendResponse(users, query, response);
 };
 
+var generateImage = function(email) {
+  return gravatar.url(email, {
+    s: '20',
+    d: 'blank'
+  });
+};
+
+var generateImages = function() {
+  for (var i in users_file) {
+    if (users_file.hasOwnProperty(i) && users_file[i].email) {
+      users_file[i].image = generateImage(users_file[i].email[0]);
+    }
+  }
+};
+
+var init = function() {
+  // TODO make this async, this is for prototyping only
+  users_file = JSON.parse(fs.readFileSync('public/users.json', 'utf8'));
+  generateImages();
+};
 
 app.get('/api/search/:query?', function(req, res){
   var query = req.params.query;
@@ -85,5 +106,8 @@ app.configure(function(){
   app.use(express.static(__dirname + '/public'));
 });
 
+init();
+
 var port = process.env.PORT || 3000;
 app.listen(port);
+
