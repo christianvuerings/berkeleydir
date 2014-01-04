@@ -45,50 +45,14 @@
     }
 
     .bd-loader {
-      width: 100px;
-      height: 50px;
-      position: relative;
-      margin: 45px auto 0;
+      animation: bd-loading 0.5s ease-in alternate infinite;
     }
 
-    .bd-loader .stick {
-      width:50px;
-      height:6px;
-      position:absolute;
-      top:23px;
+    @keyframes bd-loading {
+      from { opacity: 0.65; }
+      to { opacity: 1; }
     }
 
-    .bd-loader .left {
-      left:3px;
-      transform:rotate(180deg);
-      animation:left 1.7s infinite;
-    }
-
-    @keyframes left {
-      from { transform:rotate(180deg) scale(1); }
-      50% { transform:rotate(540deg) scale(1.5); }
-      to { transform:rotate(540deg) scale(1); }
-    }
-
-    .bd-loader .right {
-      right:3px;
-      animation:right 1.7s infinite;
-    }
-
-    @keyframes right {
-      from { transform:rotate(0deg) scale(1.5); }
-      50% { transform:rotate(0deg) scale(1); }
-      to { transform:rotate(-360deg) scale(1.5); }
-    }
-
-    .bd-loader .right span,
-    .bd-loader .left span {
-      width:6px;
-      height:6px;
-      background:#fff;
-      border-radius:3px;
-      display:block;
-    }
     .bd-noitems {
       margin-top: 20px;
     }
@@ -144,16 +108,12 @@
 </head>
 <body>
   <div class="bd-container" ng-controller="PeopleController">
-    <h1>
+    <h1 data-ng-class="{true: 'bd-loader'}[isloading]">
       <img class="bd-logo" src="images/logo-optim.svg" alt="" />
       <span class="bd-visuallyhidden">BerkeleyDir</span>
     </h1>
     <div class="bd-search-container">
       <input class="bd-search" type="text" placeholder="Search..." ng-model="user_search"></input>
-    </div>
-    <div class="bd-loader" ng-show="isloading">
-      <div class="left stick"><span></span></div>
-      <div class="right stick"><span></span></div>
     </div>
     <table class="bd-table-container" ng-show="userItems.length">
       <tr class="bd-table-headers">
@@ -163,12 +123,11 @@
       </tr>
       <tr class="bd-table-item" ng-repeat="user in userItems = (users | limitTo:20)">
         <td>
-
           <a ng-href="https://calnet.berkeley.edu/directory/details.pl?uid={{user.id}}" ng-bind="user.id"></a>
         </td>
         <td ng-bind="user.name"></td>
         <td>
-          <a data-ng-href="mailto:{{user.email}}" data-ng-bind="user.email"></a>
+          <a data-ng-repeat="email in user.email" data-ng-href="mailto:{{email}}" data-ng-bind="email"></a>
         </td>
       </tr>
     </table>
