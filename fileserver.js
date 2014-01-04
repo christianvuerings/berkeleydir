@@ -78,7 +78,7 @@ var performSearch = function(query, response) {
 
 var generateImage = function(email) {
   return gravatar.url(email, {
-    s: '20',
+    s: '14',
     d: 'blank'
   });
 };

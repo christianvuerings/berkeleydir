@@ -160,7 +160,6 @@
         <th>Uid</th>
         <th>Name</th>
         <th>Email</th>
-        <th>Image</th>
       </tr>
       <tr class="bd-table-item" ng-repeat="user in userItems = (users | limitTo:20)">
         <td>
@@ -169,8 +168,6 @@
         <td ng-bind="user.name"></td>
         <td>
           <a data-ng-href="mailto:{{user.email}}" data-ng-bind="user.email"></a>
-        </td>
-        <td>
           <img data-ng-src="{{user.image}}" alt="" />
         </td>
       </tr>
