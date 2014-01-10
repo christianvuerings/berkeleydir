@@ -1,4 +1,4 @@
-# BerkeleyDir
+# Berkeleydir
 
 http://berkeleydir.herokuapp.com/
 Easily search through the Berkeley Directory.
@@ -6,8 +6,9 @@ Easily search through the Berkeley Directory.
 ## Start server
 
 ```
-foreman
+node fileserver.js
 ```
+And go to [http://localhost:3000/](http://localhost:3000/)
 
 ## Start crawling
 
