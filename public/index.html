@@ -3,7 +3,6 @@
 <head>
   <meta charset="utf-8" />
   <title>Bereleydir - Easily search through the Berkeley Directory.</title>
-
   <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.6/angular.min.js"></script>
   <script src="https://rawgithub.com/LeaVerou/prefixfree/gh-pages/prefixfree.js"></script>
 
@@ -107,6 +106,13 @@
       position: absolute;
       width: 1px;
     }
+
+    .zclip {
+      color: #ddd;
+      text-decoration: underline;
+      cursor: pointer;
+    }
+
   </style>
 </head>
 <body>
@@ -120,15 +126,21 @@
     </div>
     <table class="bd-table-container" ng-show="userItems.length">
       <tr class="bd-table-headers">
+        <th>Link</th>
         <th>Uid</th>
         <th>Name</th>
         <th>Email</th>
       </tr>
       <tr class="bd-table-item" ng-repeat="user in userItems = (users | limitTo:20)">
         <td>
-          <a ng-href="https://calnet.berkeley.edu/directory/details.pl?uid={{user.id}}" ng-bind="user.id"></a>
+          <a ng-href="https://calnet.berkeley.edu/directory/details.pl?uid={{user.id}}">
+            <img src="/images/link.png"/>
+          </a>
         </td>
-        <td ng-bind="user.name"></td>
+        <td class="zclip" data-clipboard-text="{{user.id}}" ng-bind="user.id">
+        </td>
+        <td on-finish-render class="zclip" ng-bind="user.name" data-clipboard-text="{{user.name}}">
+        </td>
         <td>
           <a data-ng-repeat="email in user.email" data-ng-href="mailto:{{email}}" data-ng-bind="email"></a>
         </td>
@@ -140,6 +152,18 @@
   </div>
   <script>
     var berkeleydir = angular.module("berkeleydir", []);
+    berkeleydir.directive('onFinishRender', function ($timeout) {
+      return {
+        restrict: 'A',
+        link: function (scope, element, attr) {
+          if (scope.$last === true) {
+          $timeout(function () {
+            scope.$emit('ngRepeatFinished');
+          });
+          }
+        }
+      }
+    });
 
     function PeopleController($http, $scope, $timeout) {
       $scope.users = [];
@@ -178,6 +202,22 @@
         }, 100);
       });
 
+      ZeroClipboard.config({
+        moviePath: "../swf/ZeroClipboard.swf",
+        forceHandCursor: true
+      });
+
+      $scope.$on('ngRepeatFinished', function(ngRepeatFinishedEvent) {
+        var client = new ZeroClipboard(document.getElementsByClassName('zclip'));
+
+        client.on("load", function(client) {
+          client.on("complete", function(client, args) {
+            // Show a little message confirming that the text was copied
+            // alert("Copied text to clipboard: " + args.text);
+          });
+        });
+      });
+
       // $scope.users = angularFireCollection(ref, function initialLoad(){
       //   $timeout(function() {
       //     $scope.isloading = false;
@@ -185,6 +225,8 @@
       // });
     }
   </script>
+
+  <script src="/js/ZeroClipboard.min.js"></script>
 
   <script>
     (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
