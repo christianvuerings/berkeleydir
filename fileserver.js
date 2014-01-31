@@ -16,6 +16,20 @@ var sendResponse = function(users, query, response) {
   response.send(responseObject);
 };
 
+var findSplit = function(query, userSearch) {
+  var userSplit = userSearch.toLowerCase().split(' ');
+  var querySplit = query.toLowerCase().split(' ');
+
+  for (var i = 0; i < querySplit.length; i++) {
+    for (var j = 0; j < userSplit.length; j++) {
+      if (userSplit[j].indexOf(querySplit[i]) !== -1) {
+        return true;
+      }
+    }
+  }
+  return false;
+};
+
 var findUser = function(query, user) {
   query = query.toLowerCase();
   if (typeof user === 'object') {
@@ -29,8 +43,8 @@ var findUser = function(query, user) {
           }
         }
         else {
-          userSearch = user[i] + '';
-          if (userSearch.toLowerCase().indexOf(query) !== -1) {
+          var userSearch = user[i] + '';
+          if (findSplit(query, userSearch)) {
             return true;
           }
         }
@@ -38,7 +52,7 @@ var findUser = function(query, user) {
     }
   } else {
     user = user + '';
-    if (user.toLowerCase().indexOf(query) !== -1) {
+    if (findSplit(query, user)) {
       return true;
     }
   }
