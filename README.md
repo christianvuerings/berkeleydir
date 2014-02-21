@@ -16,6 +16,12 @@ And go to [http://localhost:3000/](http://localhost:3000/)
 node ldap.js
 ```
 
+## Add heroku as a remote
+
+```
+git remote add heroku git@heroku.com:berkeleydir.git
+```
+
 ## Push to Heroku
 
 ```
