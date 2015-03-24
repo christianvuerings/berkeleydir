@@ -126,7 +126,7 @@
       </tr>
       <tr class="bd-table-item" ng-repeat="user in userItems = (users | limitTo:20)">
         <td>
-          <a ng-href="https://calnet.berkeley.edu/directory/details.pl?uid={{user.id}}" ng-bind="user.id"></a>
+          <a ng-href="http://www.berkeley.edu/directory/results?u={{user.id}}" ng-bind="user.id"></a>
         </td>
         <td ng-bind="user.name"></td>
         <td>
